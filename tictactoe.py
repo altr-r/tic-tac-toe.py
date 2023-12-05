@@ -1,3 +1,4 @@
+import random
 import sys
 import pygame
 import numpy as np
@@ -70,20 +71,28 @@ class AI:
         self.level = level
         self.player = player
 
+    def rnd(self, board):
+        empty_sqrs = board.get_empty_sqrs()
+        idx = random.randrange(0, len(empty_sqrs))
+
+        return empty_sqrs[idx]
+
     def eval(self, main_board):
         if self.level == 0:
-            pass
+            move = self.rnd(main_board)
         else:
             pass
+
+        return move
 
 
 class Game:
 
     def __init__(self):
         self.board = Board()
-        # self.ai = AI()
+        self.ai = AI()
         self.player = 1  # 1-cross # 2-circle
-        self.gamemode = 'pvp'
+        self.gamemode = 'ai'
         self.running = True
         self.show_lines()
 
@@ -122,6 +131,7 @@ def main():
     # object
     game = Game()
     board = game.board
+    ai = game.ai
 
     # main loop
     while True:
@@ -141,7 +151,13 @@ def main():
                     board.mark_sqr(row, col, game.player)
                     game.draw_fig(row, col)
                     game.next_turn()
+        if game.gamemode == 'ai' and game.player == ai.player:
+            pygame.display.update()
 
+            row, col = ai.eval(board)
+            board.mark_sqr(row, col, ai.player)
+            game.draw_fig(row, col)
+            game.next_turn()
         pygame.display.update()
 
 
